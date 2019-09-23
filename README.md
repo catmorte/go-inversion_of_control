@@ -70,7 +70,5 @@ To retrieve bean use the following in your project:
 
 You may find the working example in folder /example
 
-Also supported **named scopes**
-
-To use scopes use the following functions: **RegScoped, AskScoped, DepScoped**
+Also supported **named scopes**: **RegScoped, AskScoped, DepScoped**
     
