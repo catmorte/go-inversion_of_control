@@ -69,3 +69,8 @@ To retrieve bean use the following in your project:
 **Ask** function waiting until bean resolve all the dependencies and initialize and the retrieve it
 
 You may find the working example in folder /example
+
+Also supported **named scopes**
+
+To use scopes use the following functions: **RegScoped, AskScoped, DepScoped**
+    
