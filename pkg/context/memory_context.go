@@ -67,9 +67,7 @@ func (m *memoryContext) RegScoped(s string, t interface{}, constructor func() in
 	for _, r := range requests {
 		if foundScope, ok := m.storage[r.Scope]; ok {
 			if found, ok := foundScope[r.Type]; ok {
-				go func() {
-					r.Waiter <- found
-				}()
+				r.Waiter <- found
 				continue
 			}
 		}
@@ -82,13 +80,11 @@ func (m *memoryContext) AskScoped(s string, t interface{}) chan interface{} {
 	m.lock.RLock()
 	defer m.lock.RUnlock()
 
-	waiter := make(chan interface{})
+	waiter := make(chan interface{}, 1)
 
 	if foundScope, ok := m.storage[s]; ok {
 		if found, ok := foundScope[t]; ok {
-			go func() {
-				waiter <- found
-			}()
+			waiter <- found
 			return waiter
 		}
 	}
