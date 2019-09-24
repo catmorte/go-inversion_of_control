@@ -14,10 +14,10 @@ func (m *memoryContext) GetUnresolvedRequests() []*dependencyRequest {
 	m.lock.RLock()
 	defer m.lock.RUnlock()
 	var unresolvedRequests []*dependencyRequest
-	for _, scopes := range m.requests {
+	for scope, scopes := range m.requests {
 		for t, waiters := range scopes {
 			for _, waiter := range waiters {
-				unresolvedRequests = append(unresolvedRequests, &dependencyRequest{t, waiter, defaultScope})
+				unresolvedRequests = append(unresolvedRequests, &dependencyRequest{t, waiter, scope})
 			}
 		}
 	}
