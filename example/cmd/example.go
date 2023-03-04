@@ -9,6 +9,6 @@ import (
 )
 
 func main() {
-	dependentBean := (<-context.GetContext().Ask((*dependent.Obj)(nil))).(*dependent.Obj)
+	dependentBean := context.Ask[*dependent.Obj](context.GetContext())
 	fmt.Println(dependentBean.IndependentObj.SomeValue)
 }

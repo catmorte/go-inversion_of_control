@@ -6,7 +6,7 @@ import (
 )
 
 func init() {
-	context.GetContext().Reg((*independent.Obj)(nil), func() interface{} {
+	context.Reg[*independent.Obj](context.GetContext(), func() interface{} {
 		return independent.NewIndependentObj("Hello world!")
 	})
 }
