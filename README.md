@@ -27,15 +27,15 @@ The next step is to create beans by doing the following in your project:
     
     func init() {
       // start dependencies definition
-      dep1 := context.Dep((*dep1Type)(nil))
-      dep2 := context.Dep((*dep2Type)(nil))
+      dep1 := context.Dep[*dep1Type]()
+      dep2 := context.Dep[*dep1Type]()
       ...
       depN := context.Dep((*depNType)(nil))
       // end dependencies definition
 
 
       // start bean constructor definition 
-      context.GetContext().Reg((*beanType)(nil), func() interface{} {
+      context.Reg[*beanType](context.GetContext(), func() interface{} {
         return NewBeanType(
                     (<-dep1.Waiter).(*dep1Type),
                     (<-dep2.Waiter).(*dep2Type),
@@ -64,7 +64,7 @@ The next step is to import context and beans initialization:
 
 To retrieve bean use the following in your project:
 
-   	bean := (<-context.GetContext().Ask((*beanType)(nil))).(*beanType)
+   	bean := context.Ask[*beanType](context.GetContext())
 
 **Ask** function waits until bean will be initialized and then retrieve it
 
