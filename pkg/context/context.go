@@ -6,7 +6,7 @@ import (
 
 const defaultScope = ""
 
-var currentContext Context
+var currentContext Context = NewMemoryContext()
 var lock sync.RWMutex
 
 type dependencyRequest struct {
@@ -45,18 +45,23 @@ func GetContext() Context {
 	return currentContext
 }
 
-func Ask[T any](ctx Context) T {
-	return (<-ctx.Ask((*T)(nil))).(T)
+func Ask[T any]() T {
+	return (<-GetContext().Ask((*T)(nil))).(T)
 }
 
-func Reg[T any](ctx Context, constructor func() interface{}, request ...*dependencyRequest) {
-	ctx.Reg((*T)(nil), constructor, request...)
+func Reg[T any](constructor func() interface{}, request ...*dependencyRequest) {
+	GetContext().Reg((*T)(nil), constructor, request...)
 }
 
-func RegScoped[T any](ctx Context, scope string, interfaceNil interface{}, constructor func() interface{}, request ...*dependencyRequest) {
-	ctx.RegScoped(scope, (*T)(nil), constructor, request...)
+func RegScoped[T any](scope string, interfaceNil interface{}, constructor func() interface{}, request ...*dependencyRequest) {
+	GetContext().RegScoped(scope, (*T)(nil), constructor, request...)
 }
 
-func AskScoped[T any](ctx Context, scope string) T {
-	return (<-ctx.AskScoped(scope, (*T)(nil))).(T)
+func AskScoped[T any](scope string) T {
+	return (<-GetContext().AskScoped(scope, (*T)(nil))).(T)
+}
+
+func ResolveDep[T any](dep *dependencyRequest) T {
+	rawVal := <-dep.Waiter
+	return (rawVal).(T)
 }
