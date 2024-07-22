@@ -8,7 +8,7 @@ import (
 
 func init() {
 	independentDep := Dep[*independent.Obj]()
-	Reg[*dependent.Obj](func() interface{} {
+	Reg(func() *dependent.Obj {
 		return dependent.NewDependentObj(ResolveDep[*independent.Obj](independentDep))
 	}, independentDep)
 }

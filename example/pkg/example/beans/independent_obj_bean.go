@@ -6,7 +6,7 @@ import (
 )
 
 func init() {
-	Reg[*independent.Obj](func() interface{} {
+	Reg(func() *independent.Obj {
 		return independent.NewIndependentObj("Hello world!")
 	})
 }

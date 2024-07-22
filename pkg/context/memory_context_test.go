@@ -20,14 +20,14 @@ type dependentStruct struct {
 }
 
 func TestMemoryContext_DefaultContext(t *testing.T) {
-	GetContext().Reg((*firstIndependentStruct)(nil), func() interface{} {
+	Reg[*firstIndependentStruct](func() *firstIndependentStruct {
 		t.Log("Start init firstIndependentStruct")
 		return &firstIndependentStruct{"firstTestString"}
 	})
 
-	firstDep := Dep((*firstIndependentStruct)(nil))
-	secondDep := Dep((*secondIndependentStruct)(nil))
-	GetContext().Reg((*dependentStruct)(nil), func() interface{} {
+	firstDep := Dep[*firstIndependentStruct]()
+	secondDep := Dep[*secondIndependentStruct]()
+	Reg(func() *dependentStruct {
 		t.Log("Start init dependentStruct")
 		return &dependentStruct{
 			firstDep:  (<-firstDep.Waiter).(*firstIndependentStruct),
@@ -35,13 +35,13 @@ func TestMemoryContext_DefaultContext(t *testing.T) {
 		}
 	}, firstDep, secondDep)
 
-	GetContext().Reg((*secondIndependentStruct)(nil), func() interface{} {
+	Reg(func() *secondIndependentStruct {
 		t.Log("Start init secondIndependentStruct")
 		return &secondIndependentStruct{"secondTestString"}
 	})
 
 	t.Log("Start waiting for dependentStruct")
-	actualInst := (<-GetContext().Ask((*dependentStruct)(nil))).(*dependentStruct)
+	actualInst := Ask[*dependentStruct]()
 	if actualInst.firstDep.val == "firstTestString" && actualInst.secondDep.val == "secondTestString" {
 		t.Log("Initialized")
 		return
@@ -51,14 +51,14 @@ func TestMemoryContext_DefaultContext(t *testing.T) {
 
 func TestMemoryContext_CustomContext(t *testing.T) {
 	const customScopeName = "custom"
-	GetContext().RegScoped(customScopeName, (*firstIndependentStruct)(nil), func() interface{} {
+	RegScoped(customScopeName, func() *firstIndependentStruct {
 		t.Log("Start init firstIndependentStruct")
 		return &firstIndependentStruct{"firstTestString"}
 	})
 
-	firstDep := DepScoped(customScopeName, (*firstIndependentStruct)(nil))
-	secondDep := DepScoped(customScopeName, (*secondIndependentStruct)(nil))
-	GetContext().RegScoped(customScopeName, (*dependentStruct)(nil), func() interface{} {
+	firstDep := DepScoped[*firstIndependentStruct](customScopeName)
+	secondDep := DepScoped[*secondIndependentStruct](customScopeName)
+	RegScoped(customScopeName, func() *dependentStruct {
 		t.Log("Start init dependentStruct")
 		return &dependentStruct{
 			firstDep:  (<-firstDep.Waiter).(*firstIndependentStruct),
@@ -66,13 +66,14 @@ func TestMemoryContext_CustomContext(t *testing.T) {
 		}
 	}, firstDep, secondDep)
 
-	GetContext().RegScoped(customScopeName, (*secondIndependentStruct)(nil), func() interface{} {
+	RegScoped(customScopeName, func() *secondIndependentStruct {
 		t.Log("Start init secondIndependentStruct")
 		return &secondIndependentStruct{"secondTestString"}
 	})
 
 	t.Log("Start waiting for dependentStruct")
-	actualInst := (<-GetContext().AskScoped(customScopeName, (*dependentStruct)(nil))).(*dependentStruct)
+
+	actualInst := AskScoped[*dependentStruct](customScopeName)
 	if actualInst.firstDep.val == "firstTestString" && actualInst.secondDep.val == "secondTestString" {
 		t.Log("Initialized")
 		return

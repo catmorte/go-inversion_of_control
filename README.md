@@ -35,7 +35,7 @@ The next step is to create beans by doing the following in your project:
 
 
       // start bean constructor definition
-      Reg[*beanType](func() interface{} {
+      Reg[*beanType](func() *beanType {
         return NewBeanType(
                 ResolveDep[*dep1Type](dep1),
                 ResolveDep[*dep2Type](dep2),
@@ -63,7 +63,7 @@ The next step is to import context and beans initialization:
 
 To retrieve bean use the following in your project:
 
-```bean := Ask[\*beanType]()```
+`bean := Ask[\*beanType]()`
 
 **Ask** function waits until bean will be initialized and then retrieve it
 
