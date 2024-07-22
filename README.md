@@ -63,7 +63,7 @@ The next step is to import context and beans initialization:
 
 To retrieve bean use the following in your project:
 
-bean := Ask[\*beanType]()
+```bean := Ask[\*beanType]()```
 
 **Ask** function waits until bean will be initialized and then retrieve it
 
